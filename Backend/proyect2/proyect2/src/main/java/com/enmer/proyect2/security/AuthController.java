@@ -1,6 +1,7 @@
 package com.enmer.proyect2.security;
 
 import com.enmer.proyect2.auth.*;
+import com.enmer.proyect2.auth.dto.SignupRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,43 +12,35 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.enmer.proyect2.auth.UserRepository;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthenticationManager authManager;
-    private final JwtService jwt;
-    private final UserRepository repo;
 
-    public AuthController(AuthenticationManager authManager, JwtService jwt, UserRepository repo) {
-        this.authManager = authManager;
-        this.jwt = jwt;
-        this.repo = repo;
-    }
+    private final AuthenticationManager authManager;
+    private final JwtService jwtService;
+    private final UserRepository repo;
+    private final PasswordEncoder encoder;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest r){
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req) {
         Authentication auth = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(r.getEmail(), r.getPassword())
-        );
-
-
-
-        authManager.authenticate(auth);
-        Usuario u = repo.findByEmail(r.getClass().orElseThrow());
-        var role = "ROLE_" + u.getRol().name();
-        var token = jwt.create(u.getEmail(), role);
-        return ResponseEntity.ok(new LoginResponse(token, 3600000, role, u.getEmail()));
+                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+        String email = auth.getName();
+        String role = auth.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse("ROLE_COMUN");
+        String token = jwtService.generate(email, role);
+        return ResponseEntity.ok(new LoginResponse(token, jwtService.ttlMs()));
     }
 
-    @PostMapping
-    public ResponseEntity<?> register(@RequestBody LoginRequest r){
-        if(repo.findByEmail(r.getEmail().isPresent())) return ResponseEntity.badRequest().body("Email en uso");
-        var u = Usuario.builder()
-                .email(r.getEmail())
-                .nombre(r.getEmail())
-                .passwordHash(encoder.encoder(r.getPassword()))
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
+        if (repo.existsByEmail(req.email())) return ResponseEntity.badRequest().body("Email en uso");
+        Usuario u = Usuario.builder()
+                .nombre(req.nombre())
+                .email(req.email())
+                .passwordHash(encoder.encode(req.password()))
                 .rol(RolUsuario.comun)
                 .activo(true)
                 .build();

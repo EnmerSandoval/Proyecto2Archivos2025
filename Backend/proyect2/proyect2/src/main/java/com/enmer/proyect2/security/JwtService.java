@@ -2,38 +2,36 @@ package com.enmer.proyect2.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Date;
 
 @Service
 public class JwtService {
-    private final Algorithm algorithm;
-    private final long ttlMs;
 
-    public JwtService(@Value("{app.jwt.secret}") String secret, @Value("${app.jwt.ttl-ms}") long ttlMs) {
-        this.algorithm = Algorithm.HMAC256(secret);
-        this.ttlMs = ttlMs;
-    }
+    @Value("${app.jwt.secret}")
+    private String secret;
 
-    public String create(String subject, String role){
-        var now = Instant.now();
+    @Value("${app.jwt.ttl-ms}")
+    private long ttlMs;
+
+    public String generate(String subject, String role) {
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + ttlMs);
         return JWT.create()
                 .withSubject(subject)
                 .withClaim("role", role)
-                .withIssuedAt(Date.from(now))
-                .withExpiresAt(Date.from(now.plusMillis(ttlMs)))
-                .sign(algorithm);
+                .withIssuedAt(now)
+                .withExpiresAt(exp)
+                .sign(Algorithm.HMAC256(secret));
     }
 
-    public String validateAndGetSubject(String token){
-        return JWT.require(algorithm).build().verify(token).getSubject();
+    public DecodedJWT verify(String token) {
+        return JWT.require(Algorithm.HMAC256(secret)).build().verify(token);
     }
 
-    public String getRole(String token){
-        return JWT.require(algorithm).build().verify(token).getClaim("role").asString();
-    }
+    public long ttlMs() { return ttlMs; }
 
 }
