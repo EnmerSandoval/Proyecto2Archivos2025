@@ -31,7 +31,7 @@ public class AuthController {
         String email = auth.getName();
         String role = auth.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse("ROLE_COMUN");
         String token = jwtService.generate(email, role);
-        return ResponseEntity.ok(new LoginResponse(token, jwtService.ttlMs()));
+        return ResponseEntity.ok(new LoginResponse(token, jwtService.getTtlMs()));
     }
 
     @PostMapping("/signup")
