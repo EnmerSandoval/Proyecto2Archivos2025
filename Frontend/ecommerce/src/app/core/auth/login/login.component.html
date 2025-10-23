@@ -1,0 +1,49 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card shadow-sm" style="max-width: 380px; width:100%;">
+    <div class="card-body p-4">
+      <h5 class="card-title mb-3 text-center">Ingresar</h5>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Correo</label>
+          <input type="email" class="form-control" formControlName="email" placeholder="tu@correo.com">
+          <div class="form-text text-danger" *ngIf="email.touched && email.invalid">
+            <span *ngIf="email.errors?.['required']">El correo es obligatorio.</span>
+            <span *ngIf="email.errors?.['email']">Formato inválido.</span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+          <input type="password" class="form-control" formControlName="password" placeholder="••••••">
+          <div class="form-text text-danger" *ngIf="password.touched && password.invalid">
+            <span *ngIf="password.errors?.['required']">La contraseña es obligatoria.</span>
+            <span *ngIf="password.errors?.['minlength']">Mínimo 6 caracteres.</span>
+          </div>
+        </div>
+
+        <div class="text-danger small mb-2" *ngIf="error()">{{ error() }}</div>
+
+        <button class="btn btn-primary w-100" type="submit" [disabled]="form.invalid || loading()">
+          {{ loading() ? 'Entrando…' : 'Entrar' }}
+        </button>
+      </form>
+
+      <!-- separador -->
+      <div class="d-flex align-items-center my-3">
+        <hr class="flex-grow-1">
+        <span class="mx-2 text-muted small">o</span>
+        <hr class="flex-grow-1">
+      </div>
+
+      <!-- botón/links de registro -->
+      <a class="btn btn-outline-secondary w-100" routerLink="/register">
+        Crear cuenta
+      </a>
+
+      <p class="text-center mt-3 mb-0 small">
+        ¿No tienes cuenta? <a routerLink="/register">Regístrate</a>
+      </p>
+    </div>
+  </div>
+</div>

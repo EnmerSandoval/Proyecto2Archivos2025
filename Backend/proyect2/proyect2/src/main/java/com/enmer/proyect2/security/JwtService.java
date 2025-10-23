@@ -16,7 +16,7 @@ public class JwtService {
     private String secret;
 
     @Getter
-    @Value("${app.jwt.ttl-ms:3600000}")
+    @Value("${app.jwt.ttl-ms}")
     private long ttlMs;
 
     public String generate(String subject, String role) {
@@ -32,6 +32,10 @@ public class JwtService {
 
     public DecodedJWT verify(String token) {
         return JWT.require(Algorithm.HMAC256(secret)).build().verify(token);
+    }
+
+    public long ttlMs() {
+        return ttlMs;
     }
 
 }
