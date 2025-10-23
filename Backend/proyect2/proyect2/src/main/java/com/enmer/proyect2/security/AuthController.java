@@ -1,8 +1,8 @@
 package com.enmer.proyect2.security;
 
 import com.enmer.proyect2.auth.*;
+import com.enmer.proyect2.auth.dto.LoginResponse;
 import com.enmer.proyect2.auth.dto.SignupRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
@@ -29,7 +29,7 @@ public class AuthController {
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
         String email = auth.getName();
-        String role = auth.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse("ROLE_COMUN");
+        String role = auth.getAuthorities().stream().findFirst().map(a ->   a.getAuthority()).orElse("ROLE_COMUN");
         String token = jwtService.generate(email, role);
         return ResponseEntity.ok(new LoginResponse(token, jwtService.getTtlMs()));
     }
