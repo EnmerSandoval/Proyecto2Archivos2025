@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 @Service
-@Primary
-@RequiredArgsConstructor
+    @Primary
+    @RequiredArgsConstructor
 public class DbUserDetailService implements UserDetailsService {
     private final UserRepository repo;
 
