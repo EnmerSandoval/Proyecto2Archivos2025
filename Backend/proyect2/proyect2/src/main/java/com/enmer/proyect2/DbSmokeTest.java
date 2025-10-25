@@ -21,7 +21,6 @@ public class DbSmokeTest implements ApplicationRunner {
 
     @Override
     public void run(org.springframework.boot.ApplicationArguments args) {
-        // cambia la query por defecto por una segura
         Integer one = jdbc.queryForObject("select 1", Integer.class);
         System.out.println("DB smoke OK => " + one);
     }
