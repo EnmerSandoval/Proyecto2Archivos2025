@@ -22,23 +22,21 @@
           </div>
         </div>
 
-        <div class="text-danger small mb-2" *ngIf="error()">{{ error() }}</div>
+        <div class="text-danger small mb-2" *ngIf="error()">Credenciales Incorrectas</div>
 
         <button class="btn btn-primary w-100" type="submit" [disabled]="form.invalid || loading()">
           {{ loading() ? 'Entrando…' : 'Entrar' }}
         </button>
       </form>
 
-      <!-- separador -->
       <div class="d-flex align-items-center my-3">
         <hr class="flex-grow-1">
         <span class="mx-2 text-muted small">o</span>
         <hr class="flex-grow-1">
       </div>
 
-      <!-- botón/links de registro -->
       <a class="btn btn-outline-secondary w-100" routerLink="/register">
-        Crear cuenta
+        Registrar
       </a>
 
       <p class="text-center mt-3 mb-0 small">
