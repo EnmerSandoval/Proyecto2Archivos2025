@@ -1,8 +1,11 @@
 package com.enmer.proyect2.auth;
 
+import com.enmer.proyect2.enums.RolUsuario;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuarios", schema = "ecommerce_gt")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Usuario implements UserDetails {
 
@@ -29,7 +32,10 @@ public class Usuario implements UserDetails {
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "rol_usuario")
+    @JdbcTypeCode(  SqlTypes.NAMED_ENUM)
+    @Column(name = "rol",
+            nullable = false,
+            columnDefinition = "ecommerce_gt.rol_usuario")
     private RolUsuario rol;
 
     @Column(nullable = false)

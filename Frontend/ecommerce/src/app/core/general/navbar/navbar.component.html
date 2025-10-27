@@ -1,0 +1,70 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" routerLink="/">E-Commerce</a>
+  
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div id="mainNav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="isAuth()">
+          <li class="nav-item" *ngIf="role() === 'ADMIN'">
+            <a class="nav-link" routerLink="/dash-admin" routerLinkActive="active">Admin</a>
+          </li>
+          <li class="nav-item" *ngIf="role() === 'MODERADOR'">
+            <a class="nav-link" routerLink="/dash-mod" routerLinkActive="active">Moderador</a>
+          </li>
+          <li class="nav-item" *ngIf="role() === 'LOGISTICA'">
+            <a class="nav-link" routerLink="/dash-logistic" routerLinkActive="active">Logística</a>
+          </li>
+          <li class="nav-item" *ngIf="!role() || role() === 'COMUN'">
+            <a class="nav-link" routerLink="/dash-comun" routerLinkActive="active">Mi panel</a>
+          </li>
+  
+          <ng-container *ngIf="role() === 'ADMIN'">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/empleados" routerLinkActive="active">Empleados</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/reportes" routerLinkActive="active">Reportes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/sanciones" routerLinkActive="active">Sanciones</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/notificaciones" routerLinkActive="active">Notificaciones</a>
+            </li>
+          </ng-container>
+
+          <ng-container *ngIf="role() === 'COMUN'">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/empleados" routerLinkActive="active">Vender Productos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/reportes" routerLinkActive="active">Catalogo</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/sanciones" routerLinkActive="active">Carrito</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/notificaciones" routerLinkActive="active">Mis Pedidos</a>
+            </li>
+          </ng-container>
+        </ul>
+  
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item" *ngIf="!isAuth()">
+            <a class="btn btn-outline-light me-2" routerLink="/login">Iniciar sesión</a>
+          </li>
+          <li class="nav-item" *ngIf="!isAuth()">
+            <a class="btn btn-primary" routerLink="/register">Registrarse</a>
+          </li>
+  
+          <li class="nav-item" *ngIf="isAuth()">
+            <button class="btn btn-outline-light" (click)="onLogout()">Cerrar sesión</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  

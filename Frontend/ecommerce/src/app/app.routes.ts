@@ -34,5 +34,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./core/mod/dash-mod/dash-mod.component').then(m => m.DashModComponent),
   },
+  {
+    path: 'catalogo',
+    loadComponent:() =>
+      import('./core/productos/catalogo/catalogo.component').then(m => m.CatalogoComponent),
+  },
   { path: '**', redirectTo: 'login' },
 ];

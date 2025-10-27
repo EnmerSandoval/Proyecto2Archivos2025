@@ -2,7 +2,10 @@
   <div class="card shadow-sm" style="max-width: 380px; width:100%;">
     <div class="card-body p-4">
       <h5 class="card-title mb-3 text-center">Ingresar</h5>
-
+      <div *ngIf="registered()" class="alert alert-success alert-dismissible fade show" role="alert">
+        Cuenta creada correctamente. Ahora puedes iniciar sesión.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
         <div class="mb-3">
           <label class="form-label">Correo</label>
@@ -34,10 +37,6 @@
         <span class="mx-2 text-muted small">o</span>
         <hr class="flex-grow-1">
       </div>
-
-      <a class="btn btn-outline-secondary w-100" routerLink="/register">
-        Registrar
-      </a>
       <p class="text-center mt-3 mb-0 small">
         ¿No tienes cuenta? <a routerLink="/register">Regístrate</a>
       </p>

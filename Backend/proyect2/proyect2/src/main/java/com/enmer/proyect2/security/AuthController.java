@@ -3,6 +3,8 @@ package com.enmer.proyect2.security;
 import com.enmer.proyect2.auth.*;
 import com.enmer.proyect2.auth.dto.LoginResponse;
 import com.enmer.proyect2.auth.dto.SignupRequest;
+import com.enmer.proyect2.enums.RolUsuario;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -47,18 +49,20 @@ public class AuthController {
         };
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
-        if (repo.existsByEmail(req.email())) return ResponseEntity.badRequest().body("Email en uso");
+    @PostMapping({"/register", "/signup"})
+    public ResponseEntity<Void> register(@Valid @RequestBody SignupRequest req) {
+        final String email = req.email().trim().toLowerCase();
+        if (repo.existsByEmail(email)) {
+            return ResponseEntity.status(409).build();
+        }
         Usuario u = Usuario.builder()
-                .nombre(req.nombre())
-                .email(req.email())
+                .nombre(req.nombre().trim())
+                .email(email)
                 .passwordHash(encoder.encode(req.password()))
                 .rol(RolUsuario.comun)
                 .activo(true)
                 .build();
         repo.save(u);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(201).build();
     }
-
 }

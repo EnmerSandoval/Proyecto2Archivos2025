@@ -46,7 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
         try {
-            DecodedJWT jwt = jwtService.verify(token);
+             DecodedJWT jwt = jwtService.verify(token);
             String email = jwt.getSubject();
             if (email == null) {
                 SecurityContextHolder.clearContext();

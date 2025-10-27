@@ -36,6 +36,7 @@ export class RegisterComponent {
   submit() {
     if (this.form.invalid) return;
     this.loading = true;
+    this.error = null;
     const { nombre, email, password } = this.form.value;
 
     this.auth.register({ nombre: nombre!, email: email!, password: password! })
@@ -46,7 +47,8 @@ export class RegisterComponent {
         },
         error: (e) => {
           this.loading = false;
-          this.error = e?.error?.message || 'No se pudo registrar.';
+          this.error = e?.status === 409 ? 'El correo ya está en uso.' :
+                    e?.error?.message || 'No se pudo registrar.';
         }
       });
   }

@@ -1,4 +1,4 @@
-package com.enmer.proyect2.auth;
+package com.enmer.proyect2.enums;
 
 public enum RolUsuario {
     comun,
