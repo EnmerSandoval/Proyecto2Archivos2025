@@ -8,13 +8,15 @@ export type CondicionProducto = 'nuevo' | 'usado';
 export interface Producto {
     id: number;
     nombre: string;
-    descripcion: string;
+    descripcion: string;  
     imagenUrl?: string;     
     precio: number;
     stock: number;
     condicion: CondicionProducto;
     categoria?: Categoria;
     idCategoria?: number;
+    estado?: 'pendiente' | 'aprobado' | 'rechazado' | 'suspendido'; 
+    motivoRechazo?: string | null;                                   
   }
   
   export interface Page<T> {

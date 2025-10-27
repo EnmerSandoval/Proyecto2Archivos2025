@@ -49,9 +49,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+
+                        // público
                         .requestMatchers(HttpMethod.GET, "/api/catalogo", "/api/categorias").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/mis-productos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/productos/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/productos/*/resenas").permitAll()
+
+                        // requiere login
+                        .requestMatchers(HttpMethod.POST, "/api/uploads").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/productos/*/resenas").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e

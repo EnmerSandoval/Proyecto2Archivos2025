@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { RoleGuard } from './guards/role.guard';
+import { AuthGuard } from './guards/auth.guard'; 
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -43,6 +45,26 @@ export const routes: Routes = [
     path: 'mis-productos', 
     loadComponent:() => 
       import('./core/productos/mis-productos/mis-productos.component').then(m => m.MisProductosComponent),
+  },
+  {
+    path: 'comun/productos/nuevo',
+    loadComponent: () =>
+      import('./core/productos/producto-form/producto-form.component').then(m => m.ProductoFormComponent),
+    //canActivate: [AuthGuard, RoleGuard],         
+    //data: { roles: ['comun'] },         
+  },  
+  {
+    path: 'comun/productos/editar/:id',
+    loadComponent: () =>
+      import('./core/productos/producto-form/producto-form.component')
+        .then(m => m.ProductoFormComponent),
+   // canActivate: [AuthGuard, RoleGuard],
+    // data: { roles: ['comun','admin'] },
+  },  
+  {
+    path: 'producto/:id',
+    loadComponent:() =>
+      import('./core/productos/producto-detalle/producto-detalle.component').then(m => m.ProductoDetalleComponent),
   },
   { path: '**', redirectTo: 'login' },
 ];

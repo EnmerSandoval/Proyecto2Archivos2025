@@ -9,6 +9,8 @@ public record ProductoResumenDto(
         Integer stock,
         String condicion,
         String imagenUrl,
-        Long categoriaId
+        Long categoriaId,
+        String estado,
+        String motivoRechazo
 ) {
 }

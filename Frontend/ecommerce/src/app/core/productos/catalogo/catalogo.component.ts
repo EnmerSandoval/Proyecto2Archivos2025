@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { ProductoService } from '../productos.service';
 import { Categoria, Page, Producto } from '../productos.model';
 import { ProductoCardComponent } from '../producto-card/producto-card.component';
+import { CarritoService } from '../../carrito/carrito.service';
 
  
 
@@ -16,6 +17,8 @@ import { ProductoCardComponent } from '../producto-card/producto-card.component'
 export class CatalogoComponent implements OnInit {
   private fb = inject(FormBuilder);
   private productosSrv = inject(ProductoService);
+  private carrito = inject(CarritoService);
+  
 
   categorias = signal<Categoria[]>([]);
   data = signal<Page<Producto> | null>(null);
@@ -53,6 +56,13 @@ export class CatalogoComponent implements OnInit {
     }).subscribe({
       next: (res) => { this.data.set(res); this.loading.set(false); },
       error: (e) => { this.error.set(e?.error?.message || 'No se pudo cargar.'); this.loading.set(false); }
+    });
+  }
+
+  agregarAlCarrito(p: Producto) {
+    this.carrito.agregar(p.id, 1).subscribe({
+      next: () => alert('Agregado al carrito'),
+      error: e => alert(e?.error?.message ?? 'No se pudo agregar')
     });
   }
 

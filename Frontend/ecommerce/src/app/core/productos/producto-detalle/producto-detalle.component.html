@@ -1,0 +1,87 @@
+<div class="container py-4" *ngIf="producto(); else cargando">
+    <div class="row">
+      <div class="col-md-5">
+        <img
+          [src]="producto()?.imagenUrl || 'https://via.placeholder.com/600x400?text=Producto'"
+          class="img-fluid rounded border"
+          [alt]="producto()?.nombre || 'Producto'">
+      </div>
+  
+      <div class="col-md-7">
+        <h3 class="mb-2">{{ producto()?.nombre }}</h3>
+  
+        <div class="mb-2 d-flex align-items-center flex-wrap gap-2">
+          <span class="badge"
+            [ngClass]="{
+              'bg-secondary': producto()?.estado === 'pendiente',
+              'bg-success':   producto()?.estado === 'aprobado',
+              'bg-danger':    producto()?.estado === 'rechazado',
+              'bg-warning text-dark': producto()?.estado === 'suspendido'
+            }">
+            {{ producto()?.estado }}
+          </span>
+  
+          <span class="fw-semibold">{{ producto()?.precio | currency:'GTQ' }}</span>
+          <span class="text-muted" *ngIf="avg()">• {{ avg() }} ★ ({{ resenas().length }})</span>
+        </div>
+  
+        <p class="mb-3">{{ producto()?.descripcion }}</p>
+      </div>
+    </div>
+  
+    <hr class="my-4">
+  
+    <div class="row">
+      <!-- Reseñas -->
+      <div class="col-lg-7">
+        <h5 class="mb-3">Reseñas</h5>
+  
+        <div *ngIf="resenas().length === 0" class="text-muted">
+          Aún no hay reseñas.
+        </div>
+  
+        <div class="list-group">
+          <div class="list-group-item" *ngFor="let r of resenas()">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <ng-container *ngFor="let _ of stars(r.calificacion)">★</ng-container>
+                <ng-container *ngFor="let _ of stars(5 - r.calificacion)">☆</ng-container>
+              </div>
+              <small class="text-muted">{{ r.compradorNombre }}</small>
+            </div>
+            <div class="mt-1" *ngIf="r.comentario">{{ r.comentario }}</div>
+            <small class="text-muted">{{ r.creadoEn | date:'medium' }}</small>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Form reseña -->
+      <div class="col-lg-5">
+        <h5 class="mb-3">Escribe tu reseña</h5>
+        <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  
+        <form [formGroup]="form" (ngSubmit)="publicar()" class="row g-2">
+          <div class="col-12 col-md-4">
+            <label class="form-label">Calificación</label>
+            <input type="number" class="form-control" min="1" max="5" formControlName="calificacion">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Comentario (opcional)</label>
+            <textarea class="form-control" rows="3" formControlName="comentario"></textarea>
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit" [disabled]="publicando()">Publicar</button>
+          </div>
+        </form>
+  
+        <div class="text-muted small mt-2">
+          * Debes haber comprado y recibido el producto para poder calificar.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template #cargando>
+    <div class="container py-4">Cargando…</div>
+  </ng-template>
+  

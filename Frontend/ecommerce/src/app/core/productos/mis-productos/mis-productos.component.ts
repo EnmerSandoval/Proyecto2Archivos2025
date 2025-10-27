@@ -4,17 +4,21 @@ import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { ProductoService } from '../productos.service';
 import { Page, Producto } from '../productos.model';
 import { ProductoCardComponent } from '../producto-card/producto-card.component';
+import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mis-productos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ProductoCardComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, ProductoCardComponent],
   templateUrl: './mis-productos.component.html',
   styleUrl: './mis-productos.component.scss'
 })
 export class MisProductosComponent {
   private fb = inject(FormBuilder);
   private productosServ = inject(ProductoService);
+  private router = inject(Router);
+  flash = signal<string | null>(null); 
 
   data = signal<Page<Producto> | null>(null);
   loading = signal(false);
@@ -30,8 +34,15 @@ export class MisProductosComponent {
   page = computed(() => this.data()?.number ?? 0);
   totalPages = computed(() => this.data()?.totalPages ?? 0);
   items = computed(() => this.data()?.content ?? []);
-
+  
   ngOnInit(): void {
+    const st = history.state as any;
+    if (st?.flash) {
+      this.flash.set(st.flash);
+      setTimeout(() => this.flash.set(null), 2500); // se oculta solo
+      history.replaceState({}, '', this.router.url);
+    }
+
     this.load(0);
   }
 

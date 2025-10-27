@@ -21,11 +21,14 @@
     <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
     <div *ngIf="loading()" class="alert alert-info">Cargando…</div>
   
-    <div class="row g-3" *ngIf="!loading() && items().length">
-      <div class="col-md-3" *ngFor="let p of items()">
-        <app-producto-card [p]="p"></app-producto-card>
-      </div>
+    <div class="col-md-3" *ngFor="let p of items()">
+      <app-producto-card
+        [p]="p"
+        [showAddToCart]="true"
+        (addToCart)="agregarAlCarrito(p)">
+      </app-producto-card>
     </div>
+
   
     <div *ngIf="!loading() && !items().length" class="text-muted">
       No hay resultados.

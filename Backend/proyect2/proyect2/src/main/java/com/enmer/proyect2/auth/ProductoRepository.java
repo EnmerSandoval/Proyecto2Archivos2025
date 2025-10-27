@@ -1,8 +1,9 @@
-package com.enmer.proyect2.auth; // (ideal mover a com.enmer.proyect2.producto)
+package com.enmer.proyect2.auth;
 
 import com.enmer.proyect2.enums.EstadoProducto;
 import com.enmer.proyect2.producto.Producto;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
@@ -25,18 +26,29 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
                                   @Param("pattern") String pattern,
                                   Pageable pageable);
 
+    Page<Producto> findByVendedorId(Long uid, Pageable pageable);
+
+    Page<Producto> findByVendedorIdAndEstado(Long uid, EstadoProducto estado, Pageable pageable);
+
     @Query("""
        SELECT p FROM Producto p
        WHERE p.vendedor.id = :uid
-         AND (:estado IS NULL OR p.estado = :estado)
-         AND (:q IS NULL OR
-              LOWER(p.nombre) LIKE LOWER(CONCAT('%', :q, '%')) OR
-              LOWER(p.descripcion) LIKE LOWER(CONCAT('%', :q, '%')))
+         AND (LOWER(p.nombre) LIKE :pattern OR LOWER(p.descripcion) LIKE :pattern)
        ORDER BY p.id DESC
        """)
-    Page<Producto> buscarPorVendedor(@Param("uid") Long usuarioId,
-                                     @Param("estado") EstadoProducto estado,
-                                     @Param("q") String q,
-                                     Pageable pageable);
+    Page<Producto> buscarPorVendedorConBusqueda(@Param("uid") Long uid,
+                                                @Param("pattern") String pattern,
+                                                Pageable pageable);
 
+    @Query("""
+       SELECT p FROM Producto p
+       WHERE p.vendedor.id = :uid
+         AND p.estado = :estado
+         AND (LOWER(p.nombre) LIKE :pattern OR LOWER(p.descripcion) LIKE :pattern)
+       ORDER BY p.id DESC
+       """)
+    Page<Producto> buscarPorVendedorConBusquedaYEstado(@Param("uid") Long uid,
+                                                       @Param("estado") EstadoProducto estado,
+                                                       @Param("pattern") String pattern,
+                                                       Pageable pageable);
 }

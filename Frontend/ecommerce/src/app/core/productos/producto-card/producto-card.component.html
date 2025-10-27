@@ -1,19 +1,45 @@
-<div class="card h-100">
-  <img
-    class="card-img-top"
-    [src]="p?.imagenUrl || 'https://via.placeholder.com/600x400?text=Producto'"
-    [alt]="p?.nombre || 'Producto'">
-  <div class="card-body d-flex flex-column">
-    <h6 class="card-title mb-1">{{ p?.nombre }}</h6>
+<div class="card h-100 position-relative">
+  <img class="card-img-top"
+       [src]="p.imagenUrl || 'https://via.placeholder.com/600x400?text=Producto'"
+       [alt]="p.nombre || 'Producto'">
 
-    <p class="card-text text-muted small flex-grow-1">
-      {{ p?.descripcion | slice:0:90 }}
-      {{ ((p?.descripcion?.length || 0) > 90) ? '…' : '' }}
-    </p>
-
-    <div class="d-flex justify-content-between align-items-center">
-      <span class="fw-semibold">{{ p?.precio | currency:'GTQ' }}</span>
-      <button class="btn btn-sm btn-outline-primary" type="button">Ver</button>
-    </div>
+  <div class="position-absolute top-0 start-0 m-2" *ngIf="p.estado">
+    <span class="badge"
+      [ngClass]="{
+        'bg-secondary': p.estado === 'pendiente',
+        'bg-success':   p.estado === 'aprobado',
+        'bg-danger':    p.estado === 'rechazado',
+        'bg-warning text-dark': p.estado === 'suspendido'
+      }">
+      {{ p.estado }}
+    </span>
   </div>
+
+  <div class="card-body d-flex flex-column">
+    <h6 class="card-title mb-1">{{ p.nombre }}</h6>
+      <p class="card-text text-muted small flex-grow-1">
+        {{ (p.descripcion || '') | slice:0:90 }}
+        {{ ((p.descripcion || '').length > 90) ? '…' : '' }}
+      </p>
+    <div *ngIf="p.estado === 'rechazado' && p.motivoRechazo" class="alert alert-warning py-1 px-2 small mb-2">
+      Motivo: {{ p.motivoRechazo }}
+    </div>
+
+    
+  <div class="d-flex justify-content-between align-items-center">
+    <span class="fw-semibold">{{ p.precio | currency:'GTQ' }}</span>
+    <a class="btn btn-sm btn-outline-primary" [routerLink]="['/producto', p.id]">Ver</a>
+    <button
+      *ngIf="showAddToCart"
+      type="button"
+      class="btn btn-sm btn-primary ms-2"
+      [disabled]="!canBuy()"
+      (click)="agregar()">
+      Agregar al Carrito
+    </button>
+
+  </div>
+
+
 </div>
+
