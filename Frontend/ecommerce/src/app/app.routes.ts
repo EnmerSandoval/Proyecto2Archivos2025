@@ -39,5 +39,10 @@ export const routes: Routes = [
     loadComponent:() =>
       import('./core/productos/catalogo/catalogo.component').then(m => m.CatalogoComponent),
   },
+  { 
+    path: 'mis-productos', 
+    loadComponent:() => 
+      import('./core/productos/mis-productos/mis-productos.component').then(m => m.MisProductosComponent),
+  },
   { path: '**', redirectTo: 'login' },
 ];

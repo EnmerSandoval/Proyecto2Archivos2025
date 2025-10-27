@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,8 +27,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.startsWith("/api/auth/");
+        String method = request.getMethod();
+        return path.startsWith("/api/auth/")
+                || ("GET".equals(method) && ("/api/catalogo".equals(path) || "/api/categorias".equals(path)));
     }
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -46,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
         try {
-             DecodedJWT jwt = jwtService.verify(token);
+            DecodedJWT jwt = jwtService.verify(token);
             String email = jwt.getSubject();
             if (email == null) {
                 SecurityContextHolder.clearContext();

@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.Instant;
 
@@ -85,4 +86,12 @@ public class ProductoService {
         p.setRevisadoEn(Instant.now());
         return productoRepo.save(p);
     }
+
+    public Page<Producto> misProductos(String q, EstadoProducto estado, Pageable pageable) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario u = userRepo.findByEmail(email).orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
+        String term = (q == null || q.isBlank()) ? null : q.trim();
+        return productoRepo.buscarPorVendedor(u.getId(), estado, term, pageable);
+    }
+
 }

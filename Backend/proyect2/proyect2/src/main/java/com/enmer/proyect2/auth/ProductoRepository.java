@@ -1,4 +1,4 @@
-package com.enmer.proyect2.auth;
+package com.enmer.proyect2.auth; // (ideal mover a com.enmer.proyect2.producto)
 
 import com.enmer.proyect2.enums.EstadoProducto;
 import com.enmer.proyect2.producto.Producto;
@@ -10,30 +10,33 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     Page<Producto> findByEstado(EstadoProducto estado, Pageable pageable);
 
-    @Query(value = """
-      SELECT *
-      FROM ecommerce_gt.productos p
-      WHERE p.estado = 'aprobado'
-        AND (:catId IS NULL OR p.id_categoria = :catId)
-        AND (
-          :q IS NULL OR
-          p.nombre ILIKE CONCAT('%', :q, '%') OR
-          p.descripcion ILIKE CONCAT('%', :q, '%')
-        )
-      """,
-            countQuery = """
-      SELECT COUNT(*)
-      FROM ecommerce_gt.productos p
-      WHERE p.estado = 'aprobado'
-        AND (:catId IS NULL OR p.id_categoria = :catId)
-        AND (
-          :q IS NULL OR
-          p.nombre ILIKE CONCAT('%', :q, '%') OR
-          p.descripcion ILIKE CONCAT('%', :q, '%')
-        )
-      """,
-            nativeQuery = true)
-    Page<Producto> buscarCatalogo(@Param("catId") Long catId,
-                                  @Param("q") String q,
+    @Query("""
+      SELECT p
+      FROM Producto p
+      WHERE p.estado = :estado
+        AND (:catId IS NULL OR p.categoria.id = :catId)
+        AND (:pattern IS NULL OR
+             LOWER(p.nombre) LIKE :pattern OR
+             LOWER(p.descripcion) LIKE :pattern)
+      ORDER BY p.id DESC
+    """)
+    Page<Producto> buscarCatalogo(@Param("estado") EstadoProducto estado,
+                                  @Param("catId") Long catId,
+                                  @Param("pattern") String pattern,
                                   Pageable pageable);
+
+    @Query("""
+       SELECT p FROM Producto p
+       WHERE p.vendedor.id = :uid
+         AND (:estado IS NULL OR p.estado = :estado)
+         AND (:q IS NULL OR
+              LOWER(p.nombre) LIKE LOWER(CONCAT('%', :q, '%')) OR
+              LOWER(p.descripcion) LIKE LOWER(CONCAT('%', :q, '%')))
+       ORDER BY p.id DESC
+       """)
+    Page<Producto> buscarPorVendedor(@Param("uid") Long usuarioId,
+                                     @Param("estado") EstadoProducto estado,
+                                     @Param("q") String q,
+                                     Pageable pageable);
+
 }

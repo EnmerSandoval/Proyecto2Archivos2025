@@ -24,6 +24,17 @@ export class ProductoService {
     return this.http.get<Page<Producto>>(`${this.baseUrl}/catalogo`, { params });
   }
 
+  misProductos(params: { q?: string | null; estado?: string | null; page?: number; size?: number }) {
+    const httpParams: any = {};
+    if (params.q) httpParams.q = params.q;
+    if (params.estado) httpParams.estado = params.estado;
+    if (params.page !== undefined) httpParams.page = params.page;
+    if (params.size !== undefined) httpParams.size = params.size;
+    return this.http.get<Page<Producto>>('/api/mis-productos', { params: httpParams });
+  }
+
+
+
   getCategorias(): Observable<Categoria[]> {
     return this.http.get<Categoria[]>(`${this.baseUrl}/categorias`);
   }
