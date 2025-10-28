@@ -1,0 +1,69 @@
+<div class="container py-4">
+    <h4 class="mb-3">Panel de Administración</h4>
+  
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <label class="form-label m-0 me-2">Ver rol</label>
+      <select class="form-select w-auto" [(ngModel)]="rolFiltro" (change)="cargar()">
+        <option value="moderador">moderador</option>
+        <option value="logistica">logistica</option>
+      </select>
+  
+      <button class="btn btn-primary ms-auto" (click)="abrirModal()">Asignar rol</button>
+    </div>
+  
+    <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+    <div *ngIf="loading()" class="alert alert-info">Cargando…</div>
+  
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of usuarios()">
+            <td>#{{ u.id }}</td>
+            <td>{{ u.nombre }}</td>
+            <td>{{ u.email }}</td>
+            <td><span class="badge text-bg-secondary">{{ u.rol }}</span></td>
+          </tr>
+          <tr *ngIf="!usuarios().length">
+            <td colspan="4" class="text-center text-muted py-4">Sin usuarios</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div class="d-flex justify-content-end align-items-center gap-2">
+      <button class="btn btn-sm btn-outline-secondary" (click)="paginar(-1)" [disabled]="page()<=0">◀</button>
+      <span>Página {{ page()+1 }} / {{ Math.max(totalPages(),1) }}</span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="paginar(1)" [disabled]="page()>=totalPages()-1">▶</button>
+    </div>
+  </div>
+  
+  <!-- Modal mínimo con <dialog> (sin dependencias adicionales) -->
+  <dialog id="modalRol" class="rounded-3 p-0 border-0" style="width: 420px; max-width: 95%;">
+    <form class="p-3" [formGroup]="form" (ngSubmit)="asignar()">
+      <h5 class="mb-3">Asignar rol</h5>
+  
+      <div class="mb-2">
+        <label class="form-label">Email del usuario</label>
+        <input class="form-control" type="email" formControlName="email" placeholder="usuario@demo.gt">
+      </div>
+  
+      <div class="mb-2">
+        <label class="form-label">Rol</label>
+        <select class="form-select" formControlName="rol">
+          <option value="moderador">moderador</option>
+          <option value="logistica">logistica</option>
+        </select>
+      </div>
+  
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button type="button" class="btn btn-outline-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+  
