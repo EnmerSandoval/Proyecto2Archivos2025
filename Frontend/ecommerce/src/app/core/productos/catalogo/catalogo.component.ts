@@ -18,6 +18,8 @@ export class CatalogoComponent implements OnInit {
   private fb = inject(FormBuilder);
   private productosSrv = inject(ProductoService);
   private carrito = inject(CarritoService);
+  trackById = (_: number, item: { id: number }) => item.id;
+
   
 
   categorias = signal<Categoria[]>([]);

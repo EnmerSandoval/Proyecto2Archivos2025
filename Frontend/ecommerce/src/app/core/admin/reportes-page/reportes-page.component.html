@@ -1,0 +1,116 @@
+<div class="container py-4">
+    <h4 class="mb-3">Reportes</h4>
+  
+    <div class="d-flex gap-2 align-items-end mb-3">
+      <div>
+        <label class="form-label">Días</label>
+        <input class="form-control" type="number" [(ngModel)]="dias" min="1" max="90" style="width:120px">
+      </div>
+      <div>
+        <label class="form-label">Límite</label>
+        <input class="form-control" type="number" [(ngModel)]="limite" min="1" max="50" style="width:120px">
+      </div>
+      <button class="btn btn-primary ms-auto" (click)="cargar()">Actualizar</button>
+    </div>
+  
+    <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+    <div *ngIf="loading()" class="alert alert-info">Cargando…</div>
+  
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="mb-3">Pedidos por estado</h6>
+            <table class="table table-sm">
+              <thead><tr><th>Estado</th><th class="text-end">Total</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let r of porEstado">
+                  <td>{{ r.estado }}</td>
+                  <td class="text-end">{{ r.total }}</td>
+                </tr>
+                <tr *ngIf="!porEstado.length"><td colspan="2" class="text-muted text-center">Sin datos</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="mb-3">Ventas por día (últimos {{ dias }} días)</h6>
+            <table class="table table-sm">
+              <thead><tr><th>Día</th><th class="text-end">Pedidos</th><th class="text-end">Monto</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let v of ventasDia">
+                  <td>{{ v.dia }}</td>
+                  <td class="text-end">{{ v.pedidos }}</td>
+                  <td class="text-end">{{ v.monto | currency:'GTQ' }}</td>
+                </tr>
+                <tr *ngIf="!ventasDia.length"><td colspan="3" class="text-muted text-center">Sin datos</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="mb-3">Top vendedores</h6>
+            <table class="table table-sm">
+              <thead><tr><th>Vendedor</th><th class="text-end">Items</th><th class="text-end">Ganancia</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let t of topVendedores">
+                  <td>#{{ t.vendedorId }} · {{ t.vendedorNombre }}</td>
+                  <td class="text-end">{{ t.items }}</td>
+                  <td class="text-end">{{ t.gananciaVendedor | currency:'GTQ' }}</td>
+                </tr>
+                <tr *ngIf="!topVendedores.length"><td colspan="3" class="text-muted text-center">Sin datos</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="mb-3">Top productos</h6>
+            <table class="table table-sm">
+              <thead><tr><th>Producto</th><th class="text-end">Items</th><th class="text-end">Total</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let p of topProductos">
+                  <td>#{{ p.productoId }} · {{ p.nombre }}</td>
+                  <td class="text-end">{{ p.items }}</td>
+                  <td class="text-end">{{ p.total | currency:'GTQ' }}</td>
+                </tr>
+                <tr *ngIf="!topProductos.length"><td colspan="3" class="text-muted text-center">Sin datos</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h6 class="mb-3">Top compradores</h6>
+            <table class="table table-sm">
+              <thead><tr><th>Comprador</th><th class="text-end">Pedidos</th><th class="text-end">Total</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let c of topCompradores">
+                  <td>#{{ c.compradorId }} · {{ c.compradorNombre }}</td>
+                  <td class="text-end">{{ c.pedidos }}</td>
+                  <td class="text-end">{{ c.total | currency:'GTQ' }}</td>
+                </tr>
+                <tr *ngIf="!topCompradores.length"><td colspan="3" class="text-muted text-center">Sin datos</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  

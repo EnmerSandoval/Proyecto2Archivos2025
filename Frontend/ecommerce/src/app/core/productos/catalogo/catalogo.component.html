@@ -21,13 +21,17 @@
     <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
     <div *ngIf="loading()" class="alert alert-info">Cargando…</div>
   
-    <div class="col-md-3" *ngFor="let p of items()">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-3 justify-content-center">
+    <div class="col" *ngFor="let p of items(); trackBy: trackById">
       <app-producto-card
+        class="h-100"          
         [p]="p"
         [showAddToCart]="true"
         (addToCart)="agregarAlCarrito(p)">
       </app-producto-card>
     </div>
+  </div>
+
 
   
     <div *ngIf="!loading() && !items().length" class="text-muted">

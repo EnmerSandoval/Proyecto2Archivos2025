@@ -29,5 +29,20 @@ public interface ResenaRepository extends JpaRepository<ResenaProducto, Long> {
 
     boolean existsByCompradorIdAndProductoId(Long compradorId, Long productoId);
 
+    @Query("""
+  select new com.enmer.proyect2.producto.dto.ResenaDto(
+    r.id,
+    r.producto.id,
+    r.comprador.id,
+    cast(r.calificacion as integer),
+    r.comentario,
+    r.creadoEn,
+    r.comprador.nombre
+  )
+  from ResenaProducto r
+  where r.producto.id = :idProducto
+  order by r.creadoEn desc
+""")
     List<ResenaDto> findDtosByProductoId(@Param("idProducto") Long idProducto);
+
 }

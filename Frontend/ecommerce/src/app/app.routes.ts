@@ -84,5 +84,8 @@ export const routes: Routes = [
   { path: 'logistica', loadComponent: () => import('./core/logistic/logistica-page/logistica-page.component').then(m => m.LogisticaPageComponent) },
   { path: 'moderacion', loadComponent: () => import('./core/mod/moderacion-page/moderacion-page.component').then(m => m.ModeracionPageComponent)},
   { path: 'admin', loadComponent: () => import('./core/admin/admin-page/admin-page.component').then(m => m.AdminPageComponent) },
+{ path: 'admin/reportes', loadComponent: () =>
+  import('./core/admin/reportes-page/reportes-page.component')
+    .then(m => m.ReportesPageComponent) },
   { path: '**', redirectTo: 'login' },
 ];

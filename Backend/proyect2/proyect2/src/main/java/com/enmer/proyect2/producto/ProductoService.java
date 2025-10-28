@@ -5,10 +5,7 @@ import com.enmer.proyect2.auth.ProductoRepository;
 import com.enmer.proyect2.auth.UserRepository;
 import com.enmer.proyect2.auth.Usuario;
 import com.enmer.proyect2.enums.EstadoProducto;
-import com.enmer.proyect2.producto.dto.CrearProductoRequest;
-import com.enmer.proyect2.producto.dto.CrearResenaRequest;
-import com.enmer.proyect2.producto.dto.EditarProductoRequest;
-import com.enmer.proyect2.producto.dto.ProductoDetalleDto;
+import com.enmer.proyect2.producto.dto.*;
 import com.enmer.proyect2.producto.pedidos.PedidoRepository;
 import com.enmer.proyect2.producto.resena.ResenaProducto;
 import com.enmer.proyect2.producto.resena.ResenaRepository;
@@ -161,9 +158,10 @@ public class ProductoService {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
     }
 
-    public List<ResenaProducto> resenasDeProducto(Long idProducto) {
-        return resenaRepo.findByProducto(idProducto);
+    public List<ResenaDto> resenasDeProducto(Long idProducto) {
+        return resenaRepo.findDtosByProductoId(idProducto);
     }
+
 
     public ResenaProducto crearResena(Long idProducto, CrearResenaRequest req) {
         if (req.calificacion() == null || req.calificacion() < 1 || req.calificacion() > 5)
@@ -172,10 +170,7 @@ public class ProductoService {
         var u = currentUserOrThrow();
         var p = buscarPorIdOr404(idProducto);
 
-        boolean elegible = pedidoRepo.hasDeliveredPurchase(u.getId(), p.getId());
-        if (!elegible)
-            throw new ResponseStatusException(BAD_REQUEST, "Solo puedes calificar productos comprados y entregados.");
-
+        // OPCIONAL: comenta/borra esta línea si también quieres permitir reseñas repetidas
         if (resenaRepo.existsByCompradorIdAndProductoId(u.getId(), p.getId()))
             throw new ResponseStatusException(BAD_REQUEST, "Ya calificaste este producto.");
 
@@ -188,5 +183,6 @@ public class ProductoService {
 
         return resenaRepo.save(r);
     }
+
 
 }
