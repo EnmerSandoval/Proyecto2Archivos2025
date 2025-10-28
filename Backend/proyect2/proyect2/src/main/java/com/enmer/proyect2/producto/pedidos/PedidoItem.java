@@ -27,9 +27,19 @@ public class PedidoItem {
     @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
 
+    @Column(name = "id_vendedor", nullable = false)
+    private Long idVendedor;
+
     @Column(nullable = false)
     private Integer cantidad;
 
     @Column(name = "precio_unitario", nullable = false)
     private BigDecimal precioUnitario;
+
+    @Column(name = "ganancia_vendedor", insertable = false, updatable = false)
+    private BigDecimal gananciaVendedor;
+
+    @Column(name = "comision_plataforma", insertable = false, updatable = false)
+    private BigDecimal comisionPlataforma;
+
 }

@@ -1,0 +1,54 @@
+<div class="container py-4" *ngIf="!loading()">
+    <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+    <ng-container *ngIf="data() as p">
+      <h4 class="mb-3">Pedido #{{ p.id }}</h4>
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">Productos</div>
+            <div class="card-body p-0">
+              <table class="table m-0 align-middle">
+                <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cant.</th>
+                  <th>Precio</th>
+                  <th>Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let it of p.items">
+                  <td class="d-flex align-items-center gap-2">
+                    <img [src]="it.imagenUrl || 'https://via.placeholder.com/60x45?text=Img'"
+                         [alt]="it.nombre" width="60" height="45" class="rounded border">
+                    <a [routerLink]="['/producto', it.productoId]">{{ it.nombre }}</a>
+                  </td>
+                  <td>{{ it.cantidad }}</td>
+                  <td class="text-nowrap">{{ it.precioUnitario | currency:'GTQ' }}</td>
+                  <td class="text-nowrap fw-semibold">{{ it.subtotal | currency:'GTQ' }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+  
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">Resumen</div>
+            <div class="card-body">
+              <div class="mb-2"><b>Estado:</b> {{ p.estado }}</div>
+              <div class="mb-2"><b>Fecha:</b> {{ p.realizadoEn | date:'short' }}</div>
+              <div class="mb-2"><b>Dirección (id):</b> {{ p.idDireccionEnvio ?? '—' }}</div>
+              <div class="d-flex justify-content-between border-top pt-2 mt-2">
+                <span>Total</span>
+                <span class="fw-bold">{{ p.montoTotal | currency:'GTQ' }}</span>
+              </div>
+            </div>
+          </div>
+          <a routerLink="/pedidos" class="btn btn-outline-secondary w-100 mt-3">Volver a mis pedidos</a>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  

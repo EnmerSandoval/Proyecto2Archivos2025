@@ -66,5 +66,22 @@ export const routes: Routes = [
     loadComponent:() =>
       import('./core/productos/producto-detalle/producto-detalle.component').then(m => m.ProductoDetalleComponent),
   },
+  {
+    path: 'carrito',
+    loadComponent:() =>
+      import('./core/carrito/carrito-page/carrito-page.component').then(m => m.CarritoPageComponent),
+  },
+  {
+    path: 'pedidos',
+    loadComponent:() => 
+      import ('./core/pedidos/pedidos-list/pedidos-list.component').then(m => m.PedidosListComponent),
+  },
+  {
+    path: 'pedidos/:id',
+    loadComponent: ()=>
+      import ('./core/pedidos/pedido-detalle/pedido-detalle.component').then(m => m.PedidoDetalleComponent),
+  },
+  { path: 'logistica', loadComponent: () => import('./core/logistic/logistica-page/logistica-page.component').then(m => m.LogisticaPageComponent) },
+  { path: 'moderacion', loadComponent: () => import('./core/mod/moderacion-page/moderacion-page.component').then(m => m.ModeracionPageComponent)},
   { path: '**', redirectTo: 'login' },
 ];

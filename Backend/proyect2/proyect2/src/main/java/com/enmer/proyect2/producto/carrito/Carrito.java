@@ -22,9 +22,10 @@ public class Carrito {
     @ManyToOne(optional = false) @JoinColumn(name="id_usuario")
     private Usuario usuario;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="estado", nullable=false)
-    private EstadoCarrito estado = EstadoCarrito.activo;
+    //@Builder.Default
+    //@Enumerated(EnumType.STRING)
+    //@Column(name="estado", nullable=false)
+    //private EstadoCarrito estado = EstadoCarrito.activo;
 
     @CreationTimestamp
     @Column(name="creado_en", updatable=false)
@@ -34,6 +35,11 @@ public class Carrito {
     @Column(name="fecha_actualizada")
     private OffsetDateTime fechaActualizada;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false, length = 20)
+    private EstadoCarrito estado = EstadoCarrito.activo;
+
+    @Builder.Default
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemCarrito> items = new ArrayList<>();
 }

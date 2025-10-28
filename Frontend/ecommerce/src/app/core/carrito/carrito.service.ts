@@ -34,7 +34,7 @@ export class CarritoService {
   eliminar(itemId: number) {
     return this.http.delete<Carrito>(`${this.base}/items/${itemId}`);
   }
-  checkout(idDireccionEnvio: number) {
-    return this.http.post(`${this.base}/checkout`, { idDireccionEnvio }, { observe: 'response' });
+  checkout(direccionEnvio: string) {
+    return this.http.post(`${this.base}/checkout`, { direccionEnvio }, { observe: 'response' });
   }
 }

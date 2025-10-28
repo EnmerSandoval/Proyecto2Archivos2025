@@ -14,6 +14,8 @@ import com.enmer.proyect2.producto.pedidos.ItemPedidoRepository;
 import com.enmer.proyect2.producto.pedidos.Pedido;
 import com.enmer.proyect2.producto.pedidos.PedidoItem;
 import com.enmer.proyect2.producto.pedidos.PedidoRepository;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -136,7 +138,8 @@ public class CarritoService {
     }
 
     @Transactional
-    public Long checkout(Long idDireccionEnvio) {
+    public Long checkout(String direccionEnvio) {
+        Instant fecha = Instant.now().plus(java.time.Duration.ofDays(3));
         var u = common.currentUserOrThrow();
         var c = carritoRepo.findAbiertoByUsuario(u.getId())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Carrito vacío"));
@@ -147,7 +150,9 @@ public class CarritoService {
         var pedido = Pedido.builder()
                 .comprador(u)
                 .estado(EstadoPedido.creado)
-                .idDireccionEnvio(idDireccionEnvio)
+                .direccionEnvio(direccionEnvio.trim())
+                .fechaEntrega(null)
+                .fechaPrometidaEntrega(fecha.plus(3, ChronoUnit.DAYS))
                 .build();
         pedidoRepo.save(pedido);
 
@@ -164,6 +169,7 @@ public class CarritoService {
             var ip = PedidoItem.builder()
                     .pedido(pedido)
                     .producto(prod)
+                    .idVendedor(prod.getVendedor().getId())
                     .cantidad(it.getCantidad())
                     .precioUnitario(it.getPrecioUnitario())
                     .build();
@@ -172,6 +178,8 @@ public class CarritoService {
             total = total.add(it.getPrecioUnitario()
                     .multiply(BigDecimal.valueOf(it.getCantidad())));
         }
+
+        c.setEstado(EstadoCarrito.pagado);
 
         pedido.setMontoTotal(total);
         pedidoRepo.save(pedido);

@@ -1,0 +1,79 @@
+<div class="container py-4">
+    <h4 class="mb-3">Mi carrito</h4>
+  
+    <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+    <div *ngIf="loading()" class="alert alert-info">Cargando…</div>
+  
+    <div *ngIf="!loading() && !items().length" class="text-muted">Tu carrito está vacío.</div>
+  
+    <div class="table-responsive" *ngIf="!loading() && items().length">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th style="width: 160px;">Cantidad</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let it of items()">
+            <td class="d-flex align-items-center gap-2">
+              <img [src]="it.imagenUrl || 'https://via.placeholder.com/80x60?text=Img'"
+                   [alt]="it.nombre" width="80" height="60" class="rounded border">
+              <div>
+                <div class="fw-semibold">{{ it.nombre }}</div>
+                <a [routerLink]="['/producto', it.productoId]" class="small">Ver detalle</a>
+              </div>
+            </td>
+            <td class="text-nowrap">{{ it.precioUnitario | currency:'GTQ' }}</td>
+            <td>
+              <div class="input-group input-group-sm" style="max-width: 150px;">
+                <button class="btn btn-outline-secondary" (click)="dec(it)">–</button>
+                <input class="form-control text-center" [value]="it.cantidad" readonly>
+                <button class="btn btn-outline-secondary" (click)="inc(it)">+</button>
+              </div>
+            </td>
+            <td class="text-nowrap fw-semibold">{{ it.subtotal | currency:'GTQ' }}</td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-danger" (click)="eliminar(it)">Quitar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <div class="d-flex justify-content-end">
+        <div class="card p-3" style="min-width: 320px;">
+          <div class="d-flex justify-content-between">
+            <span>Total</span>
+            <span class="fw-bold">{{ total() | currency:'GTQ' }}</span>
+          </div>
+  
+          <form [formGroup]="form" class="mt-2">
+            <label class="form-label small mb-1">Dirección de envío</label>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              formControlName="direccion"
+              placeholder="Calle, zona, municipio, departamento"
+              autocomplete="shipping street-address"
+            >
+            <div class="text-danger small mt-1" *ngIf="form.get('direccion')?.touched && form.get('direccion')?.invalid">
+              Ingresa una dirección válida (mínimo 5 caracteres).
+            </div>
+          </form>
+          
+          <button
+            class="btn btn-primary w-100 mt-3"
+            (click)="checkout()"
+            [disabled]="form.invalid || loading()"
+          >
+            Pagar
+          </button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+      

@@ -1,5 +1,7 @@
 package com.enmer.proyect2.producto.pedidos;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,8 +15,12 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
         where p.estado = 'entregado'
           and p.id_comprador = :uid
           and ip.id_producto = :pid
-      )
+      ) 
     """, nativeQuery = true)
     boolean hasDeliveredPurchase(@Param("uid") Long usuarioId,
                                  @Param("pid") Long productoId);
+
+    Page<Pedido> findByCompradorIdOrderByIdDesc(Long compradorId, Pageable pageable);
+
+    java.util.Optional<Pedido> findByIdAndCompradorId(Long id, Long compradorId);
 }

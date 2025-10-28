@@ -98,7 +98,7 @@ public class ProductoController {
 
     @PostMapping("/api/productos/{id}/resenas")
     public ResenaDto crearResena(@PathVariable Long id,
-                                 @RequestBody CrearResenaRequest req) { // <-- IMPORTANTE
+        @RequestBody CrearResenaRequest req) {
         if (req.calificacion() == null || req.calificacion() < 1 || req.calificacion() > 5)
             throw new ResponseStatusException(BAD_REQUEST, "Calificación 1..5 requerida");
 

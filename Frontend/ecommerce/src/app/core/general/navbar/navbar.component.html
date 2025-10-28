@@ -53,12 +53,17 @@
               <a class="nav-link" routerLink="mis-productos" routerLinkActive="active">Mis productos</a>
             </li>
           </ng-container>
-      
+        
+          <ng-container *ngIf="role() === 'LOGISTICA'">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/logistica" routerLinkActive="active">Ordenes pendientes</a>
+            </li>
+          </ng-container>
   
 
         <ng-container *ngIf="role() === 'MODERADOR'">
           <li class="nav-item">
-            <a class="nav-link" routerLink="/comun/productos/nuevo" routerLinkActive="active">Revision de Publicaciones</a>
+            <a class="nav-link" routerLink="/moderacion" routerLinkActive="active">Revision de Publicaciones</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" routerLink="/catalogo" routerLinkActive="active">Gestionar Sanciones</a>

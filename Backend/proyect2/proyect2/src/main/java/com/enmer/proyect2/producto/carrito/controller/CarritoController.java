@@ -38,7 +38,7 @@ public class CarritoController {
 
     @PostMapping("/checkout")
     public ResponseEntity<Void> checkout(@RequestBody CheckoutRequest req) {
-        Long id = service.checkout(req.idDireccionEnvio());
+        Long id = service.checkout(req.direccionEnvio());
         return ResponseEntity.created(URI.create("/api/pedidos/" + id)).build();
     }
 }

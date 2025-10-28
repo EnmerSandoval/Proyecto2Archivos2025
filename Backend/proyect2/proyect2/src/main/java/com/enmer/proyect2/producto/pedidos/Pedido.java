@@ -24,9 +24,6 @@ public class Pedido {
     @JoinColumn(name = "id_comprador", nullable = false)
     private Usuario comprador;
 
-    @Column(name = "id_direccion_envio")
-    private Long idDireccionEnvio;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
     private EstadoPedido estado;
@@ -34,14 +31,22 @@ public class Pedido {
     @Column(name = "realizado_en", insertable = false, updatable = false)
     private Instant realizadoEn;
 
-    @Column(name = "fecha_prometida_entrega", insertable = false)
-    private LocalDate fechaPrometidaEntrega;
+    @Column(name = "fecha_prometida_entrega", nullable = false)
+    private Instant fechaPrometidaEntrega;
 
     @Column(name = "fecha_entrega")
-    private LocalDate fechaEntrega;
+    private Instant fechaEntrega;
+
 
     @Column(name = "monto_total", insertable = false)
     private BigDecimal montoTotal;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private java.util.List<PedidoItem> items = new java.util.ArrayList<>();
+
+    @Column(name = "direccion_envio", nullable = false, length = 255)
+    private String direccionEnvio;
 
     @PrePersist
     void prePersist() {
