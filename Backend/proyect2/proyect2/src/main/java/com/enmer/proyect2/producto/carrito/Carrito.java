@@ -23,8 +23,7 @@ public class Carrito {
     private Usuario usuario;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
-    @Column(name = "estado", nullable = false, columnDefinition = "ecommerce_gt.estado_carrito")
+    @Column(name="estado", nullable=false)
     private EstadoCarrito estado = EstadoCarrito.activo;
 
     @CreationTimestamp

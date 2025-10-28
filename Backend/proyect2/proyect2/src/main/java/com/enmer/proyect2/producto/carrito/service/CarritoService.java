@@ -3,6 +3,7 @@ package com.enmer.proyect2.producto.carrito.service;
 import com.enmer.proyect2.auth.ProductoRepository;
 import com.enmer.proyect2.auth.Usuario;
 import com.enmer.proyect2.enums.EstadoCarrito;
+import com.enmer.proyect2.enums.EstadoPedido;
 import com.enmer.proyect2.producto.Producto;
 import com.enmer.proyect2.producto.carrito.Carrito;
 import com.enmer.proyect2.producto.carrito.CarritoRepository;
@@ -36,15 +37,19 @@ public class CarritoService {
     private final com.enmer.proyect2.producto.ProductoService common;
 
     private Carrito getOrCreateOpenCart(Usuario u) {
-        return carritoRepo.findFirstByUsuarioIdAndEstadoOrderByIdDesc(u.getId(), EstadoCarrito.activo)
-                .orElseGet(() -> carritoRepo.save(Carrito.builder().usuario(u).estado(EstadoCarrito.activo).build()));
+        return carritoRepo.findAbiertoByUsuario(u.getId())
+                .orElseGet(() -> carritoRepo.save(
+                        Carrito.builder()
+                                .usuario(u)
+                                .estado(EstadoCarrito.activo)
+                                .build()
+                ));
     }
 
     @Transactional(readOnly = true)
     public CarritoDto verCarrito() {
         var u = common.currentUserOrThrow();
-        var c = carritoRepo.findFirstByUsuarioIdAndEstadoOrderByIdDesc(u.getId(), EstadoCarrito.activo)
-                .orElse(null);
+        var c = carritoRepo.findAbiertoByUsuario(u.getId()).orElse(null);
         if (c == null) return new CarritoDto(null, java.util.List.of(), BigDecimal.ZERO);
 
         var items = c.getItems().stream().map(it ->
@@ -56,9 +61,11 @@ public class CarritoService {
                         it.getCantidad(),
                         it.getPrecioUnitario(),
                         it.getPrecioUnitario().multiply(BigDecimal.valueOf(it.getCantidad()))
-                )).collect(Collectors.toList());
+                )
+        ).collect(Collectors.toList());
 
-        var total = items.stream().map(CarritoDto.ItemDto::subtotal)
+        var total = items.stream()
+                .map(CarritoDto.ItemDto::subtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new CarritoDto(c.getId(), items, total);
@@ -67,6 +74,7 @@ public class CarritoService {
     @Transactional
     public CarritoDto agregar(Long productoId, int cantidad) {
         if (cantidad <= 0) throw new ResponseStatusException(BAD_REQUEST, "Cantidad inválida");
+
         var u = common.currentUserOrThrow();
         Producto p = productoRepo.findById(productoId)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
@@ -88,20 +96,27 @@ public class CarritoService {
             existing.setCantidad(Math.min(existing.getCantidad() + cantidad, p.getStock()));
         }
         itemRepo.save(existing);
+
         return verCarrito();
     }
 
     @Transactional
     public CarritoDto actualizarCantidad(Long itemId, int cantidad) {
         if (cantidad <= 0) throw new ResponseStatusException(BAD_REQUEST, "Cantidad inválida");
+
         var u = common.currentUserOrThrow();
         var c = getOrCreateOpenCart(u);
-        var it = itemRepo.findById(itemId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        if (!it.getCarrito().getId().equals(c.getId())) throw new ResponseStatusException(FORBIDDEN);
+
+        var it = itemRepo.findById(itemId)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+
+        if (!it.getCarrito().getId().equals(c.getId()))
+            throw new ResponseStatusException(FORBIDDEN);
 
         var stock = it.getProducto().getStock() == null ? 0 : it.getProducto().getStock();
         it.setCantidad(Math.min(cantidad, stock));
         itemRepo.save(it);
+
         return verCarrito();
     }
 
@@ -109,8 +124,13 @@ public class CarritoService {
     public CarritoDto eliminarItem(Long itemId) {
         var u = common.currentUserOrThrow();
         var c = getOrCreateOpenCart(u);
-        var it = itemRepo.findById(itemId).orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-        if (!it.getCarrito().getId().equals(c.getId())) throw new ResponseStatusException(FORBIDDEN);
+
+        var it = itemRepo.findById(itemId)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+
+        if (!it.getCarrito().getId().equals(c.getId()))
+            throw new ResponseStatusException(FORBIDDEN);
+
         itemRepo.delete(it);
         return verCarrito();
     }
@@ -118,14 +138,15 @@ public class CarritoService {
     @Transactional
     public Long checkout(Long idDireccionEnvio) {
         var u = common.currentUserOrThrow();
-        var c = carritoRepo.findFirstByUsuarioIdAndEstadoOrderByIdDesc(u.getId(), EstadoCarrito.activo)
+        var c = carritoRepo.findAbiertoByUsuario(u.getId())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Carrito vacío"));
 
-        if (c.getItems().isEmpty()) throw new ResponseStatusException(BAD_REQUEST, "Carrito vacío");
+        if (c.getItems().isEmpty())
+            throw new ResponseStatusException(BAD_REQUEST, "Carrito vacío");
 
-        Pedido pedido = Pedido.builder()
+        var pedido = Pedido.builder()
                 .comprador(u)
-                .estado(com.enmer.proyect2.enums.EstadoPedido.creado)
+                .estado(EstadoPedido.creado)
                 .idDireccionEnvio(idDireccionEnvio)
                 .build();
         pedidoRepo.save(pedido);
@@ -134,9 +155,11 @@ public class CarritoService {
 
         for (var it : c.getItems()) {
             var prod = it.getProducto();
-            int nuevo = (prod.getStock() == null ? 0 : prod.getStock()) - it.getCantidad();
-            if (nuevo < 0) throw new ResponseStatusException(BAD_REQUEST, "Sin stock: " + prod.getNombre());
-            prod.setStock(nuevo);
+            int nuevoStock = (prod.getStock() == null ? 0 : prod.getStock()) - it.getCantidad();
+            if (nuevoStock < 0)
+                throw new ResponseStatusException(BAD_REQUEST, "Sin stock: " + prod.getNombre());
+
+            prod.setStock(nuevoStock);
 
             var ip = PedidoItem.builder()
                     .pedido(pedido)
@@ -145,7 +168,9 @@ public class CarritoService {
                     .precioUnitario(it.getPrecioUnitario())
                     .build();
             itemPedidoRepo.save(ip);
-            total = total.add(it.getPrecioUnitario().multiply(BigDecimal.valueOf(it.getCantidad())));
+
+            total = total.add(it.getPrecioUnitario()
+                    .multiply(BigDecimal.valueOf(it.getCantidad())));
         }
 
         pedido.setMontoTotal(total);

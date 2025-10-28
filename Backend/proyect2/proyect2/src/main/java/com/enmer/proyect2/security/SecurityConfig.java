@@ -60,6 +60,9 @@ public class SecurityConfig {
                         // requiere login
                         .requestMatchers(HttpMethod.POST, "/api/uploads").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/productos/*/resenas").authenticated()
+                        // .requestMatchers(HttpMethod.POST, "/api/carrito/**").authenticated()
+                        .requestMatchers(HttpMethod.GET,  "/api/carrito/**").authenticated()
+
 
                         .anyRequest().authenticated()
                 )
